@@ -1,10 +1,9 @@
-import { injectable, inject } from 'inversify';
-import IUserService from './interfaces/IUserService';
+import { inject, injectable } from 'inversify';
 import { TYPES } from '../di/types';
 import { UserRepository } from '../repositories/user-repository';
 
 @injectable()
-export default class UserService implements IUserService {
+export class UserService {
   constructor(
     @inject(TYPES.UserRepository) private userRepository: UserRepository
   ) {}
@@ -17,5 +16,7 @@ export default class UserService implements IUserService {
     return this.userRepository.createUser(name, email);
   }
 
-
+  async getUserById(id: number) {
+    return this.userRepository.getUserById(id);
+  }
 }
