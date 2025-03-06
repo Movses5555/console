@@ -3,12 +3,14 @@ import { TYPES } from '../di/types';
 import { UserRepository } from '../repositories/user-repository';
 
 @injectable()
-export class UserService {
+export default class UserService {
   constructor(
     @inject(TYPES.UserRepository) private userRepository: UserRepository
   ) {}
 
   async getUsers() {
+    console.log('bbbbbbbbbbbbbbbb');
+    
     return this.userRepository.getUsers();
   }
 

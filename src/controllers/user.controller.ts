@@ -3,86 +3,20 @@ import { inject } from 'inversify';
 import {
   controller,
   httpGet,
-  httpPost,
   request,
   response,
+  Middleware,
 } from 'inversify-express-utils';
 import { TYPES } from '../di/types';
-import { UserService } from '../services/user.service';
+import UserService from '../services/user.service';
+import { RequestWithAuth } from '../requests/auth/auth-base.request';
+import authMiddleware from '../middlewares/auth.middleware';
 
-@controller('/users')
+@controller('/user')
 export class UserController {
   constructor(
     @inject(TYPES.UserService) private userService: UserService
   ) {}
-
-  /**
-   * @swagger
-   * /users:
-   *   get:
-   *     summary: Get all users
-   *     description: Returns a list of all users.
-   *     responses:
-   *       200:
-   *         description: A list of users.
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: array
-   *               items:
-   *                 $ref: '#/components/schemas/User'
-   */
-  @httpGet('/')
-  public async getUsers(@request() req: Request, @response() res: Response) {
-    const users = await this.userService.getUsers();
-    res.json(users);
-  }
-
-  /**
-   * @swagger
-   * /users:
-   *   post:
-   *     summary: Create a new user
-   *     description: Creates a new user with the provided name and email.
-   *     requestBody:
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             required:
-   *               - name
-   *               - email
-   *             properties:
-   *               name:
-   *                 type: string
-   *                 example: John Doe
-   *               email:
-   *                 type: string
-   *                 example: john.doe@example.com
-   *     responses:
-   *       201:
-   *         description: User created successfully.
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/User'
-   *       400:
-   *         description: Invalid input. Name and email are required.
-   *       500:
-   *         description: Internal server error.
-   */
-  @httpPost('/')
-  public async createUser(@request() req: Request, @response() res: Response) {
-    const { name, email } = req.body;
-    console.log('name', name);
-    console.log('email', email);
-    
-    const user = await this.userService.createUser(name, email);
-    console.log('user', user);
-    
-    res.status(201).json(user);
-  }
 
   /**
    * @swagger
@@ -109,10 +43,18 @@ export class UserController {
    *       500:
    *         description: Internal server error.
    */
-  @httpGet('/:id')
-  public async getUserById(@request() req: Request, @response() res: Response) {
+  @httpGet('/', authMiddleware as unknown as Middleware)
+  public async getUserById(
+    @request() req: RequestWithAuth, 
+    @response() res: Response
+  ) {
+    console.log(req.params);
+    
     const id = parseInt(req.params.id, 10);
+    console.log('id', id, req.params.id);
+    
     const user = await this.userService.getUserById(id);
+    console.log('user', user);
     if (user) {
       res.json(user);
     } else {

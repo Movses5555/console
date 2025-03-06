@@ -1,13 +1,10 @@
 import { injectable } from 'inversify';
 import { BaseRepository } from './base-repository';
 import pool from '../config/db';
-import { IUserRepository } from './interfaces/IUserRepository';
-import TelegramUser from '../models/telegram-user';
-import { randomUUID, UUID } from 'crypto';
-
+import { IAuthRepository } from './interfaces/IAuthRepository';
 
 @injectable()
-export class UserRepository extends BaseRepository implements IUserRepository {
+export class AuthRepository extends BaseRepository implements IAuthRepository {
   constructor() {
     super(pool);
   }
@@ -47,25 +44,5 @@ export class UserRepository extends BaseRepository implements IUserRepository {
 
   async deleteUser(id: number) {
     await this.query('DELETE FROM users WHERE id = $1', [id]);
-  }
-
-  async createTelegramUser(user: TelegramUser): Promise<void> {
-    const { id, username, photo_url} = user;
-    console.log('id, username, photo_url', id, username, photo_url);
-    try {
-      await this.pool.query(
-        'INSERT INTO users(id, telegram_id, username, photo_url) VALUES($1, $2, $3, $4)',
-        [randomUUID(), id, username, photo_url],
-      );
-    } catch (error) {
-      console.log('error', error);
-      
-    }
-
-  }
-
-  async getUserByTelegramId(id: number) {
-    const result = await this.query('SELECT * FROM users WHERE telegram_id = $1', [id]);
-    return result.rows[0];
   }
 }
