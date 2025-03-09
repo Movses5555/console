@@ -1,13 +1,21 @@
-import { Pool } from 'pg';
+import { injectable } from 'inversify';
+import { IBaseRepository } from './interfaces/IBaseRepository';
 
-export class BaseRepository {
-  protected pool: Pool;
+@injectable()
+export default abstract class BaseRepository implements IBaseRepository {
 
-  constructor(pool: Pool) {
-    this.pool = pool;
+  private isConnected = false;
+
+  abstract connect(): Promise<void>;
+
+  abstract disconnect(): Promise<void>;
+
+  isConnectionReady() {
+    return this.isConnected;
   }
 
-  async query(text: string, params?: any[]) {
-    return this.pool.query(text, params);
+  protected setConnectionReady() {
+    this.isConnected = true;
+    console.log('Connected Repository');
   }
 }

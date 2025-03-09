@@ -1,6 +1,8 @@
 export const TYPES = {
-  UserRepository: Symbol.for("UserRepository"),
-  UserService: Symbol.for("UserService"),
-  AuthService: Symbol.for('AuthService'),
+  BaseRepository: Symbol.for("BaseRepository"),
   Repository: Symbol.for('Repository'),
+  AuthService: Symbol.for('AuthService'),
+  UserService: Symbol.for("UserService"),
+  MiningService: Symbol.for('MiningService'),
+  SettingsService: Symbol.for('SettingsService'),
 };

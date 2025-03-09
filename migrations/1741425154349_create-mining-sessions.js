@@ -9,30 +9,26 @@ exports.shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-  pgm.createTable('users', {
-    id: { 
-      type: 'uuid', 
-      primaryKey: true
+  pgm.createTable('mining_sessions', {
+    id: {
+      type: 'uuid',
+      primaryKey: true,
     },
-    telegram_id: { 
-      type: 'bigint',
+    user_id: {
+      type: 'uuid',
+      references: 'users (id)',
+      notNull: true,
       unique: true,
-      notNull: true
     },
-    username: {
-      type: 'varchar(128)'
+    multiplier: {
+      type: 'int',
+      notNull: true,
+      default: 1,
     },
-    photo_url: {
-      type: 'varchar(128)',
-      notNull: false
-    },
-    is_used_daily_code: { 
-      type: 'boolean',
-      default: false
-    },
-    is_used_daily_claim: { 
-      type: 'boolean',
-      default: false
+    last_claimed_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('current_timestamp'),
     },
     created_at: {
       type: 'timestamp',
@@ -48,5 +44,5 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-  pgm.dropTable('users');
+  pgm.dropTable('mining_sessions');
 };

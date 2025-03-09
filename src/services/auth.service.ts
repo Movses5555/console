@@ -1,9 +1,9 @@
 import { inject, injectable } from 'inversify';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import crypto, { randomUUID, UUID } from 'crypto';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { TYPES } from '../di/types';
 import IAuthService from './interfaces/IAuthService';
-import { IUserRepository } from '../repositories/interfaces/IUserRepository';
+import { IRepository } from '../repositories/interfaces/IRepository';
 import User from '../models/user';
 import DomainError from '../errors/domain.error';
 import AuthCredentials from '../models/auth-credentials';
@@ -13,7 +13,7 @@ import TelegramUser from '../models/telegram-user';
 @injectable()
 export default class AuthService implements IAuthService {
   constructor(
-    @inject(TYPES.UserRepository) private userRepository: IUserRepository
+    @inject(TYPES.Repository) private repository: IRepository,
   ) {}
 
   private readonly JWT_VERIFICATION_TOKEN = process.env.JWT_VERIFICATION_TOKEN!;
@@ -23,7 +23,7 @@ export default class AuthService implements IAuthService {
     const payload = new AccessTokenPayload(user.id);
     const plainPayload = { userId: payload.userId };
     const accessToken = jwt.sign(plainPayload, this.JWT_VERIFICATION_TOKEN, {
-      expiresIn: '30m',
+      expiresIn: '7d',
     });
 
     let refreshToken: string = oldRefreshToken || '';
@@ -66,21 +66,16 @@ export default class AuthService implements IAuthService {
     if (!this.validateTelegramAuthData(data)) {
       throw new DomainError('Данные Telegram не валидированы.');
     }
-    console.log('aaaaaaaaaaa', data);
-    
-    let user = await this.userRepository.getUserByTelegramId(data.id);
-    console.log('user', user);
-    
+    let user = await this.repository.getUserByTelegramId(data.id);
     if (!user) {
-      await this.userRepository.createTelegramUser(data);
-      console.log('aaaaaaaaaaaaaaaddddddddddddddddddddd');
-      
-      user = await this.userRepository.getUserByTelegramId(data.id);
+      await this.repository.createTelegramUser(data);      
+      user = await this.repository.getUserByTelegramId(data.id);
       if (!user) {
         throw new DomainError(
           'Мы не смогли создать нового пользователя через этот Телеграмма.',
         );
       }
+      await this.repository.createUserBalances(user.id);
     }
     return this.getAuthCredentials(user);
   }
@@ -91,7 +86,6 @@ export default class AuthService implements IAuthService {
     } catch {
       return undefined;
     }
-    console.log('=================', token);
     
     const decoded = JSON.parse(JSON.stringify(jwt.decode(token)));
     return new AccessTokenPayload(decoded.userId);

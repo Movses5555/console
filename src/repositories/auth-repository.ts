@@ -9,17 +9,6 @@ export class AuthRepository extends BaseRepository implements IAuthRepository {
     super(pool);
   }
 
-  async getUsers() {
-    console.log('cccccccccccccc');
-    
-    console.log('this.query', this.query);
-    console.log('this.pool', this.pool);
-    
-    const result = await this.pool.query('SELECT * FROM users');
-    console.log('result====', result);
-    
-    return result.rows;
-  }
 
   async getUserById(id: number) {
     const result = await this.query('SELECT * FROM users WHERE id = $1', [id]);
