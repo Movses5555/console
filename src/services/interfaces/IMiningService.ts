@@ -1,6 +1,7 @@
 import { UUID } from 'crypto';
 import { Pool, PoolClient } from 'pg';
-import { Mining } from '../../models/mining.model';
+import Mining from '../../models/mining.model';
+import { DateTime } from 'luxon';
 
 export default interface IMiningService {
   createMining(
@@ -31,6 +32,19 @@ export default interface IMiningService {
     userId: UUID,
     client?: PoolClient | Pool
   ): Promise<void>;
-  
+
+  getMiningSession(
+    lastClaimedAt: DateTime,
+    upgradeSpeed: number,
+    boostSpeed: number,
+    miningBlockPoint: number,
+    durationMS: number
+  ): {
+    boostSpeed: number,
+    upgradeSpeed: number,
+    blockPoint: number,
+    miningLeftSecond: number,
+    miningPoints: number,
+  };
 }
 

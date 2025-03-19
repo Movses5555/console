@@ -9,28 +9,42 @@ exports.shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-  pgm.createTable('mining_sessions', {
+  pgm.createTable('boost_blocks', {
     id: {
       type: 'uuid',
       primaryKey: true,
     },
-    user_id: {
-      type: 'uuid',
-      references: 'users (id)',
-      notNull: true,
-      unique: true,
-    },
-    multiplier: {
+    speed: {
       type: 'int',
       notNull: true,
       default: 1,
     },
-    last_claimed_at: {
+    duration: {
+      type: 'int',
+      notNull: true,
+      default: 0,
+    },
+    ton_price: {
+      type: 'numeric',
+      notNull: true,
+      default: 0,
+    },
+    is_free: {
+      type: 'boolean',
+      notNull: true,
+      default: false,
+    },
+    is_active: {
+      type: 'boolean',
+      notNull: true,
+      default: false,
+    },
+    created_at: {
       type: 'timestamp',
       notNull: true,
       default: pgm.func('current_timestamp'),
     },
-    created_at: {
+    updated_at: {
       type: 'timestamp',
       notNull: true,
       default: pgm.func('current_timestamp'),
@@ -44,5 +58,5 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-  pgm.dropTable('mining_sessions');
+  pgm.dropTable('boost_blocks');
 };

@@ -14,14 +14,16 @@ import ISettingsService from "../services/interfaces/ISettingsService";
 import Repository from "../repositories/repository";
 import { IRepository } from "../repositories/interfaces/IRepository";
 
+import "reflect-metadata";
+
 import '../controllers/auth.controller';
 import '../controllers/user.controller';
 
+const container = new Container({
+  defaultScope: 'Singleton'
+});
 
-const container = new Container();
-
-container.bind<Pool>('Pool').toConstantValue(pool);
-
+container.bind<Pool>(TYPES.Pool).toConstantValue(pool);
 
 container.bind<IRepository>(TYPES.Repository).to(Repository);
 container.bind<IAuthService>(TYPES.AuthService).to(AuthService);

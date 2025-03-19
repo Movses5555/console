@@ -15,15 +15,15 @@ exports.up = (pgm) => {
       primaryKey: true
     },
     telegram_id: { 
-      type: 'bigint',
+      type: 'int',
       unique: true,
       notNull: true
     },
     username: {
-      type: 'varchar(128)'
+      type: 'text'
     },
     photo_url: {
-      type: 'varchar(128)',
+      type: 'text',
       notNull: false
     },
     is_used_daily_code: { 

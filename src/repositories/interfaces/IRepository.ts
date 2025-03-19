@@ -2,7 +2,13 @@ import { Pool, PoolClient } from 'pg';
 import  User from '../../models/user'
 import TelegramUser from '../../models/telegram-user'
 import { UUID } from 'crypto';
-import { Mining } from '../../models/mining.model';
+import Mining from '../../models/mining.model';
+
+
+import UpgradeBlock from '../../models/upgrade-block.model';
+import UserUpgradeBlock from '../../models/user-upgrade-block.model';
+import BoostBlock from '../../models/boost-block.model';
+import UserBoostBlock from '../../models/user-boost-block.model';
 
 
 export interface IRepository {
@@ -13,57 +19,69 @@ export interface IRepository {
   rollbackAndRelease(client: PoolClient): Promise<void>;
 
   getUserById(
-    id: UUID
+    id: UUID,
+    client?: PoolClient | Pool
   ): Promise<User>;
 
   createUser(
     name: string,
-    email: string
+    email: string,
+    client?: PoolClient | Pool
   ): Promise<User>;
 
   updateUser(
     id: UUID,
     name: string,
-    email: string
+    email: string,
+    client?: PoolClient | Pool
   ): Promise<User>;
 
   deleteUser(
-    id: UUID
+    id: UUID,
+    client?: PoolClient | Pool
   ): Promise<void>;
   
   createTelegramUser(
-    user: TelegramUser
+    user: TelegramUser,
+    client?: PoolClient | Pool
   ): Promise<void>;
 
   getUserByTelegramId(
-    telegramId: number
+    telegramId: number,
+    client?: PoolClient | Pool
   ): Promise<User | null>;
 
   getTotalBalanceByUserId(
-    userId: UUID
+    userId: UUID,
+    client?: PoolClient | Pool
   ): Promise<number>;
 
   createUserBalances(
-    userId: UUID
+    userId: UUID,
+    client?: PoolClient | Pool
   ): Promise<void>;
 
   updateUserBalances(
     userId: UUID,
     balance: number,
+    client?: PoolClient | Pool
   ): Promise<void>;
   
   createUserDayCode(
     userId: UUID,
-    code: string
+    code: string,
+    client?: PoolClient | Pool
   ): Promise<void>;
   
   getUserDayCode(
-    userId: UUID
+    userId: UUID,
+    client?: PoolClient | Pool
   ): Promise<string>;
   
   updateUserDayCode(
     userId: UUID,
-    code: string
+    code: string,
+    client?: PoolClient | Pool
   ): Promise<void>;
 
   createMining(
@@ -106,16 +124,27 @@ export interface IRepository {
     client?: PoolClient | Pool
   ): Promise<string>;
 
-  isDailyCodeUsed(
+  isUsedDailyCode(
     userId: UUID,
     client?: PoolClient | Pool,
   ): Promise<boolean> ;
 
-  updateIsDailyCodeUsed(
+  isUsedDailyClaim(
     userId: UUID,
-    isDailyCodeUsed: boolean,
+    client?: PoolClient | Pool,
+  ): Promise<boolean> ;
+
+  updateIsUsedDailyCode(
+    userId: UUID,
+    isUsedDailyCode: boolean,
     client?: PoolClient | Pool,  
-  ): Promise<string>;
+  ): Promise<void>;
+
+  updateIsUsedDailyClaim(
+    userId: UUID,
+    isUsedDailyClaim: boolean,
+    client?: PoolClient | Pool,  
+  ): Promise<void>;
 
   updateDailyCode(
     code: string,
@@ -139,4 +168,105 @@ export interface IRepository {
     client?: PoolClient | Pool
   ): Promise<number>;
 
+  getAllUpgradeBlocks(
+    client?: PoolClient | Pool,
+  ): Promise<UpgradeBlock[]>;
+
+  getActiveUpgradeBlocks(
+    client?: PoolClient | Pool,
+  ): Promise<UpgradeBlock[]>;
+
+  updateUpgradeBlockById(
+    id: UUID,
+    speed: number,
+    point: number,
+    nativePrice: number,
+    tonPrice: number,
+    level: number,
+    isActive: boolean,
+    client?: PoolClient | Pool,
+  ): Promise<void>;
+
+  deleteUpgradeBlockById(
+    id: UUID,
+    client?: PoolClient | Pool
+  ): Promise<void>;
+
+  getAllBoostBlocks(
+    client?: PoolClient | Pool,
+  ): Promise<BoostBlock[]>;
+
+  getActiveBoostBlocks(
+    client?: PoolClient | Pool,
+  ): Promise<BoostBlock[]>;
+
+  updateBoostBlockById(
+    id: UUID,
+    speed: number,
+    point: number,
+    nativePrice: number,
+    tonPrice: number,
+    isFree: boolean,
+    isActive: boolean,
+    client?: PoolClient | Pool,
+  ): Promise<void>;
+
+  deleteBoostBlockById(
+    id: UUID,
+    client?: PoolClient | Pool
+  ): Promise<void>;
+  
+  getUserUpgradeBlocks(
+    userId: UUID,
+    client?: PoolClient | Pool,
+  ): Promise<UserUpgradeBlock[]>;
+
+  getActiveUsersUpgradeBlocks(
+    userId: UUID,
+    client?: PoolClient | Pool,
+  ): Promise<UpgradeBlock[]>;
+
+  updateUsersUpgradeBlockById(
+    id: UUID,
+    userId: UUID,
+    upgradeBlockId: UUID,
+    isActive: boolean,
+    speed: number,
+    point: number,
+    nativePrice: number,
+    tonPrice: number,
+    level: number,
+    client?: PoolClient | Pool,
+  ): Promise<void>;
+
+  deleteUsersUpgradeBlockById(
+    id: UUID,
+    client?: PoolClient | Pool
+  ): Promise<void>;
+
+  getUserBoostBlocks(
+    userId: UUID,
+    client?: PoolClient | Pool,
+  ): Promise<UserBoostBlock[]>;
+
+  getActiveUserBoostBlocks(
+    client?: PoolClient | Pool,
+  ): Promise<BoostBlock[]>;
+
+  updateUserBoostBlockById(
+    id: UUID,
+    userId: UUID,
+    boostBlockId: UUID,
+    speed: number,
+    duration: number,
+    tonPrice: number,
+    level: number,
+    isActive: boolean,
+    client?: PoolClient | Pool,
+  ): Promise<void>;
+
+  deleteUserBoostBlockById(
+    id: UUID,
+    client?: PoolClient | Pool
+  ): Promise<void>;
 }

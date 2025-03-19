@@ -72,7 +72,7 @@ export class AuthController {
     @request() req: Request,
     @response() res: Response,
   ) {
-    const data = req.body;    
+    const data = req.body;
     const authCredentials = await this.authService.telegramAuth(data);
     res.json(authCredentials);
   }

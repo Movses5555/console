@@ -1,13 +1,13 @@
 import { UUID } from 'crypto';
 import { DateTime } from 'luxon';
 
-export default class Mining {
+export default class BoostBlock {
   constructor(
     public id: UUID,
-    public userId: UUID,
-    public boost_speed: number,
-    public upgrade_speed: number,
-    public last_claimed_at: DateTime,
+    public speed: number,
+    public duration: number,
+    public ton_price: number,
+    public is_free: boolean,
     public created_at: DateTime,
     public updated_at: DateTime,
   ) {}
